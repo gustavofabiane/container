@@ -1,0 +1,19 @@
+# ignore thrid-party libraries
+vendor/
+composer.lock
+
+# ignore IDE config
+.vscode/
+.idea/
+
+# test cache
+coverage/
+coverage.xml
+.phpunit.result.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# keep files
+!.gitkeep

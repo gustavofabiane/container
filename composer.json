@@ -1,0 +1,45 @@
+{
+    "name": "simplewayphp/simpleway",
+    "description": "A simple and light microframework",
+    "version": "0.1",
+    "type": "library",
+    "require": {
+        "php": "^7.2",
+        "psr/container": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.2"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gustavo Fabiane",
+            "email": "gustavfabiane@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "SimpleWay\\Container\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SimpleWay\\Container\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phpunit"
+        ],
+        "test-cov-xml": [
+            "vendor/bin/phpunit --coverage-clover coverage.xml"
+        ],
+        "test-cov-html": [
+            "vendor/bin/phpunit --coverage-html coverage/"
+        ],
+        "metrics": [
+            "phpmetrics --report-html=metrics/ ./"
+        ]
+    }
+}
