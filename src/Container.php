@@ -222,7 +222,8 @@ class Container implements ContainerInterface
         try {
             [$callable, $reflectedParameters] = $this->normalizeCallable($callable, $defaultMethod);
             return call_user_func_array(
-                $callable, $this->resolveParameters($reflectedParameters, $params)
+                $callable,
+                $this->resolveParameters($reflectedParameters, $params)
             );
         } catch (ReflectionException $e) {
             throw new ContainerException(
@@ -242,11 +243,14 @@ class Container implements ContainerInterface
      */
     private function normalizeCallable($callable, string $defaultMethod): array
     {
-        if (function_exists($callable) || $callable instanceof Closure) {
+        $normalized = false;
+        if ((is_string($callable) && function_exists($callable)) || $callable instanceof Closure) {
             $reflectedParameters = (new ReflectionFunction($callable))->getParameters();
+            $normalized = true;
         } else {
-            if (is_object($callable) || class_exists($callable)) {
+            if (!is_array($callable) && (is_object($callable) || class_exists($callable))) {
                 $callable = [$callable, $defaultMethod];
+                $normalized = true;
             }
             if (is_array($callable)) {
                 [$classObject, $method] = $callable;
@@ -255,7 +259,11 @@ class Container implements ContainerInterface
                     $classObject = $this->make($classObject);
                 }
                 $callable = [$classObject, $method];
+                $normalized = true;
             }
+        }
+        if (!$normalized) {
+            throw new ContainerException(sprintf('Cannot normalize callable [%s]', $callable));
         }
 
         return [$callable, $reflectedParameters];
@@ -324,10 +332,10 @@ class Container implements ContainerInterface
             $type = $param->getType();
             if (array_key_exists($param->getName(), $params)) {
                 $resolved[] = $params[$param->getName()];
-            } elseif ($type && !$type->isBuiltin()) {
-                $resolved[] = $this->get($type->getName());
             } elseif ($this->has($param->getName())) {
                 $resolved[] = $this->get($param->getName());
+            } elseif ($type && !$type->isBuiltin()) {
+                $resolved[] = $this->get($type->getName());
             } elseif ($param->isDefaultValueAvailable()) {
                 $resolved[] = $param->getDefaultValue();
             }

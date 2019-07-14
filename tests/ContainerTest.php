@@ -18,6 +18,7 @@ use SimpleWay\Container\Tests\Stubs\SimpleConstructorStub;
 use SimpleWay\Container\Tests\Stubs\ServiceStub;
 use SimpleWay\Container\Tests\Stubs\InterfaceStub;
 use SimpleWay\Container\Tests\Stubs\ClassInjectableStub;
+use SimpleWay\Container\Tests\Stubs\CallableMethodsStub;
 use SimpleWay\Container\EntryNotFoundException;
 use SimpleWay\Container\ContainerException;
 use SimpleWay\Container\Container;
@@ -219,5 +220,103 @@ class ContainerTest extends TestCase
         
         $container = new Container();
         $container->make(uniqid());
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallClosure(): void
+    {
+        $container = new Container();
+
+        $container->call(function () {
+            $this->assertTrue(true);
+        });
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallMethod(): void
+    {
+        $container = new Container();
+
+        $result = $container->call([CallableMethodsStub::class, 'stub']);
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallMethodWithArg(): void
+    {
+        $container = new Container();
+        $option = ['a' => 'b'];
+
+        $result = $container->call([CallableMethodsStub::class, 'stubWithArg'], compact('option'));
+        $this->assertEquals($option, $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallMethodWithContainerEntry(): void
+    {
+        $container = new Container();
+        $container->set('option', ['a' => 'b']);
+
+        $result = $container->call([CallableMethodsStub::class, 'stubWithArg']);
+        $this->assertEquals($container->get('option'), $result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallMethodWithMultipleArgs(): void
+    {
+        $container = new Container();
+        $option = ['a' => 'b'];
+        $container->set('object', $object = new \stdClass());
+
+        $result = $container->call([CallableMethodsStub::class, 'setubWithMultipleArgs'], compact('option'));
+        $this->assertSame($object, $result['object']);
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallInvokableClass(): void
+    {
+        $container = new Container();
+
+        $result = $container->call(CallableMethodsStub::class);
+        $this->assertIsArray($result);
+    }
+
+    /**
+     * @return void
+     */
+    public function testCallWithCustomDefaultMethod(): void
+    {
+        $container = new Container();
+
+        $result = $container->call(CallableMethodsStub::class, [], 'stub');
+        $this->assertTrue($result);
+    }
+
+    public function testCallUndefinedMethod(): void
+    {
+        $this->expectException(ContainerException::class);
+        
+        $container = new Container();
+        $container->call(CallableMethodsStub::class, [], 'stubUndefined');
+    }
+
+    public function testCallUndefinedFunction(): void
+    {
+        $this->expectException(ContainerException::class);
+        
+        $container = new Container();
+        $container->call('functionDatDoesNotExists', [], 'stubUndefined');
     }
 }
