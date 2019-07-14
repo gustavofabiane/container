@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Simple Way Framework
+ * Simple Way PHP
  * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -216,8 +216,8 @@ class ContainerTest extends TestCase
     public function testMakeInvalidClassInstance(): void
     {
         $this->expectException(ContainerException::class);
+        
         $container = new Container();
-
         $container->make(uniqid());
     }
 }
