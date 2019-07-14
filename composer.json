@@ -1,6 +1,6 @@
 {
-    "name": "simplewayphp/simpleway",
-    "description": "A simple and light microframework",
+    "name": "simplewayphp/container",
+    "description": "Small yet powerful dependency injection container",
     "version": "0.1",
     "type": "library",
     "require": {
