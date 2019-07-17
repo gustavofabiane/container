@@ -21,11 +21,49 @@ use Closure;
 
 class Container implements ContainerInterface
 {
+    /**
+     * Registered container entries
+     *
+     * @var array
+     */
     protected $entries = [];
+
+    /**
+     * A list of container entries identifiers that are factories
+     *
+     * Factories are entries which does not maintain resolved instances,
+     * this way they are resolved every time their called.
+     *
+     * @var array
+     */
     protected $factories = [];
+
+    /**
+     * A list of container entries identifier that were already resolved
+     *
+     * @var array
+     */
     protected $resolved = [];
+
+    /**
+     * The resolved instances of the container entries
+     *
+     * @var array
+     */
     protected $instances = [];
+
+    /**
+     * A list of container interface implementors
+     *
+     * @var array
+     */
     protected $interfaces = [];
+
+    /**
+     * A list of container entries aliases
+     *
+     * @var array
+     */
     protected $aliases = [];
 
     /**
@@ -34,7 +72,7 @@ class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function isResolved(string $id): bool
+    protected function isResolved(string $id): bool
     {
         return in_array($id, $this->resolved);
     }
@@ -45,7 +83,7 @@ class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function isFactory(string $id): bool
+    protected function isFactory(string $id): bool
     {
         return in_array($id, $this->factories);
     }
@@ -56,7 +94,7 @@ class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function isInterface(string $id): bool
+    protected function isInterface(string $id): bool
     {
         return interface_exists($id) && array_key_exists($id, $this->interfaces);
     }
@@ -67,7 +105,7 @@ class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function isAlias(string $id): bool
+    protected function isAlias(string $id): bool
     {
         return array_key_exists($id, $this->aliases);
     }
@@ -99,7 +137,14 @@ class Container implements ContainerInterface
         }
     }
 
-    public function instance(string $id, $instance): void
+    /**
+     * Set a new entry into the container as an instance
+     *
+     * @param string $id
+     * @param object $instance
+     * @return void
+     */
+    public function instance(string $id, object $instance): void
     {
         $this->instances[$id] = $instance;
         $this->resolved[] = $id;
@@ -241,7 +286,7 @@ class Container implements ContainerInterface
      * @param string $defaultMethod
      * @return array the normalized callable and its reflected parameters
      */
-    private function normalizeCallable($callable, string $defaultMethod): array
+    protected function normalizeCallable($callable, string $defaultMethod): array
     {
         $normalized = false;
         if ((is_string($callable) && function_exists($callable)) || $callable instanceof Closure) {
@@ -306,7 +351,7 @@ class Container implements ContainerInterface
      * @return mixed
      * @throws ReflectionException The reflection feature did not work correctly
      */
-    private function getInstance(ReflectionClass $item, array $params = [])
+    protected function getInstance(ReflectionClass $item, array $params = [])
     {
         $constructor = $item->getConstructor();
         if (is_null($constructor) || $constructor->getNumberOfRequiredParameters() == 0) {
@@ -325,7 +370,7 @@ class Container implements ContainerInterface
      * @return array
      * @throws ReflectionException The reflection feature did not work correctly
      */
-    private function resolveParameters(array $reflectedParameters, array $params = []): array
+    protected function resolveParameters(array $reflectedParameters, array $params = []): array
     {
         $resolved = [];
         foreach ($reflectedParameters as $param) {
