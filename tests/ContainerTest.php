@@ -1,29 +1,29 @@
 <?php
 
 /**
- * Simple Way PHP
+ * Container
  * 
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @see https://simplewayphp.dev
+ * 
+ * Gustavo Fabiane (c) 2019
  */
 
 declare(strict_types=1);
 
-namespace SimpleWay\Tests\Container;
+namespace GustavoFabiane\Tests\Container;
 
-use SimpleWay\Container\Tests\Stubs\StubInterface;
-use SimpleWay\Container\Tests\Stubs\SimpleConstructorStub;
-use SimpleWay\Container\Tests\Stubs\ServiceStub;
-use SimpleWay\Container\Tests\Stubs\InterfaceStub;
-use SimpleWay\Container\Tests\Stubs\ClassInjectableStub;
-use SimpleWay\Container\Tests\Stubs\CallableMethodsStub;
-use SimpleWay\Container\EntryNotFoundException;
-use SimpleWay\Container\ContainerException;
-use SimpleWay\Container\Container;
 use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
+use GustavoFabiane\Container\Tests\Stubs\StubInterface;
+use GustavoFabiane\Container\Tests\Stubs\SimpleConstructorStub;
+use GustavoFabiane\Container\Tests\Stubs\ServiceStub;
+use GustavoFabiane\Container\Tests\Stubs\InterfaceStub;
+use GustavoFabiane\Container\Tests\Stubs\ClassInjectableStub;
+use GustavoFabiane\Container\Tests\Stubs\CallableMethodsStub;
+use GustavoFabiane\Container\EntryNotFoundException;
+use GustavoFabiane\Container\ContainerException;
+use GustavoFabiane\Container\Container;
 
 class ContainerTest extends TestCase
 {

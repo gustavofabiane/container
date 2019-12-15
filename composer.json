@@ -20,12 +20,12 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "SimpleWay\\Container\\": "src/"
+            "GustavoFabiane\\Container\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SimpleWay\\Container\\Tests\\": "tests/"
+            "GustavoFabiane\\Container\\Tests\\": "tests/"
         }
     },
     "scripts": {
