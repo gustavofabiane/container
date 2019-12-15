@@ -1,5 +1,5 @@
 {
-    "name": "simplewayphp/container",
+    "name": "gustavofabiane/container",
     "description": "Small yet powerful dependency injection container",
     "version": "0.1",
     "type": "library",
