@@ -193,21 +193,36 @@ class ContainerTest extends TestCase
         $container->set(ServiceStub::class, function () {
             return new ServiceStub();
         });
-        $container->set('x', function () {
-            return new \stdClass();
-        });
+        
+        $instance = $container->make($abstract, $params);
+        $this->assertInstanceOf($abstract, $instance);
+    }
+    
+    /**
+     * @dataProvider abstractAndParametersProvider
+     *
+     * @param string $abstract
+     * @param array $params
+     * @return void
+     */
+    public function testMakeInstanceFullRuntimeResolving(string $abstract, array $params): void
+    {
+        $container = new Container();
         
         $instance = $container->make($abstract, $params);
         $this->assertInstanceOf($abstract, $instance);
     }
 
+    /**
+     * @return array
+     */
     public function abstractAndParametersProvider(): array
     {
         return [
             [\stdClass::class, []],
             [SimpleConstructorStub::class, ['a' => 1, 'b' => 2]],
             [ClassInjectableStub::class, []],
-            [ServiceStub::class, []]
+            [ServiceStub::class, []],
         ];
     }
 
