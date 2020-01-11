@@ -1,18 +1,20 @@
 <?php
 
 /**
- * Simple Way PHP
+ * Container
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @see https://simplewayphp.dev
+ * Gustavo Fabiane (c) 2019
  */
 
 declare(strict_types=1);
 
-namespace SimpleWay\Container;
+namespace GustavoFabiane\Container;
 
+use ReflectionType;
+use ReflectionParameter;
 use ReflectionFunction;
 use ReflectionException;
 use ReflectionClass;
@@ -21,6 +23,17 @@ use Closure;
 
 class Container implements ContainerInterface
 {
+    private const SCALAR_TYPES = [
+        'int',
+        'integer',
+        'float',
+        'double',
+        'bool',
+        'boolean',
+        'string',
+        'array'
+    ];
+
     /**
      * Registered container entries
      *
@@ -363,6 +376,36 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Resolve a reflected parameter
+     *
+     * @param ReflectionParameter $param
+     * @param array $params
+     * @return mixed
+     */
+    private function resolveParameter(ReflectionParameter $param, array $params = [])
+    {
+        $paramName = $param->getName();
+        $type = $param->getType();
+        $resolvedParam = null;
+        if (array_key_exists($paramName, $params)) {
+            $resolvedParam = $params[$paramName];
+        } elseif ($this->has($paramName)) {
+            $resolvedParam = $this->get($paramName);
+        } elseif ($type && !$type->isBuiltin() && $this->has($type->getName())) {
+            $resolvedParam = $this->get($type->getName());
+        } elseif (($type && $this->isScalarType($type)) && $param->isDefaultValueAvailable()) {
+            $resolvedParam = $param->getDefaultValue();
+        }
+        if (!$resolvedParam && ($type && !$this->isScalarType($type))) {
+            $resolvedParam = $this->make($type->getName(), $params, true);
+        }
+        if (!$resolvedParam && $param->isDefaultValueAvailable()) {
+            $resolvedParam = $param->getDefaultValue();
+        }
+        return $resolvedParam;
+    }
+
+    /**
      * Revolve an array of reflected parameters
      *
      * @param array|ReflectionParameter[] $reflectedParameters
@@ -374,17 +417,19 @@ class Container implements ContainerInterface
     {
         $resolved = [];
         foreach ($reflectedParameters as $param) {
-            $type = $param->getType();
-            if (array_key_exists($param->getName(), $params)) {
-                $resolved[] = $params[$param->getName()];
-            } elseif ($this->has($param->getName())) {
-                $resolved[] = $this->get($param->getName());
-            } elseif ($type && !$type->isBuiltin()) {
-                $resolved[] = $this->get($type->getName());
-            } elseif ($param->isDefaultValueAvailable()) {
-                $resolved[] = $param->getDefaultValue();
-            }
+            $resolved[] = $this->resolveParameter($param, $params);
         }
         return $resolved;
+    }
+
+    /**
+     * Check whether given type is scalar
+     *
+     * @param ReflectionType $type
+     * @return bool
+     */
+    private function isScalarType(ReflectionType $type): bool
+    {
+        return in_array($type->getName(), static::SCALAR_TYPES);
     }
 }
