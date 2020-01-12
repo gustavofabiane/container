@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace GustavoFabiane\Container;
 
+use Closure;
 use ReflectionType;
-use ReflectionParameter;
+use ReflectionClass;
 use ReflectionFunction;
 use ReflectionException;
-use ReflectionClass;
+use ReflectionNamedType;
+use ReflectionParameter;
 use Psr\Container\ContainerInterface;
-use Closure;
 
 class Container implements ContainerInterface
 {
@@ -384,8 +385,10 @@ class Container implements ContainerInterface
      */
     private function resolveParameter(ReflectionParameter $param, array $params = [])
     {
-        $paramName = $param->getName();
+        /** @var ReflectionNamedType|ReflectionType $type */
         $type = $param->getType();
+
+        $paramName = $param->getName();
         $resolvedParam = null;
         if (array_key_exists($paramName, $params)) {
             $resolvedParam = $params[$paramName];
@@ -425,10 +428,10 @@ class Container implements ContainerInterface
     /**
      * Check whether given type is scalar
      *
-     * @param ReflectionType $type
+     * @param ReflectionNamedType $type
      * @return bool
      */
-    private function isScalarType(ReflectionType $type): bool
+    private function isScalarType(ReflectionNamedType $type): bool
     {
         return in_array($type->getName(), static::SCALAR_TYPES);
     }
